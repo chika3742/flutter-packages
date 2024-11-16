@@ -1,3 +1,7 @@
+## 14.7.0
+
+- Adds default page builder support.
+
 ## 14.6.0
 
 - Allows going to a path relatively by prefixing `./`
