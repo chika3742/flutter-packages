@@ -52,6 +52,7 @@ class RouteBuilder {
   RouteBuilder({
     required this.configuration,
     required this.builderWithNav,
+    required this.defaultPageBuilder,
     required this.errorPageBuilder,
     required this.errorBuilder,
     required this.restorationScopeId,
@@ -62,6 +63,9 @@ class RouteBuilder {
 
   /// Builder function for a go router with Navigator.
   final GoRouterBuilderWithNav builderWithNav;
+
+  /// Default page builder for the go router delegate.
+  final DefaultPageBuilder? defaultPageBuilder;
 
   /// Error page builder for the go router delegate.
   final GoRouterPageBuilder? errorPageBuilder;
@@ -119,6 +123,7 @@ class RouteBuilder {
         matchList: matchList,
         matches: matchList.matches,
         configuration: configuration,
+        defaultPageBuilder: defaultPageBuilder,
         errorBuilder: errorBuilder,
         errorPageBuilder: errorPageBuilder,
       ),
@@ -136,6 +141,7 @@ class _CustomNavigator extends StatefulWidget {
     required this.matchList,
     required this.matches,
     required this.configuration,
+    required this.defaultPageBuilder,
     required this.errorBuilder,
     required this.errorPageBuilder,
   });
@@ -153,6 +159,7 @@ class _CustomNavigator extends StatefulWidget {
   final RouteConfiguration configuration;
   final PopPageWithRouteMatchCallback onPopPageWithRouteMatch;
   final String? navigatorRestorationId;
+  final DefaultPageBuilder? defaultPageBuilder;
   final GoRouterWidgetBuilder? errorBuilder;
   final GoRouterPageBuilder? errorPageBuilder;
 
@@ -255,6 +262,12 @@ class _CustomNavigatorState extends State<_CustomNavigator> {
     if (builder == null) {
       return null;
     }
+    if (widget.defaultPageBuilder != null) {
+      return widget.defaultPageBuilder!(context, state,
+          Builder(builder: (BuildContext context) {
+        return builder(context, state);
+      }));
+    }
     return _buildPlatformAdapterPage(context, state,
         Builder(builder: (BuildContext context) {
       return builder(context, state);
@@ -293,6 +306,7 @@ class _CustomNavigatorState extends State<_CustomNavigator> {
           observers: observers ?? const <NavigatorObserver>[],
           onPopPageWithRouteMatch: widget.onPopPageWithRouteMatch,
           // This is used to recursively build pages under this shell route.
+          defaultPageBuilder: widget.defaultPageBuilder,
           errorBuilder: widget.errorBuilder,
           errorPageBuilder: widget.errorPageBuilder,
         );
@@ -302,6 +316,14 @@ class _CustomNavigatorState extends State<_CustomNavigator> {
         match.route.buildPage(context, state, shellRouteContext);
     if (page != null && page is! NoOpPage) {
       return page;
+    }
+
+    if (widget.defaultPageBuilder != null) {
+      return widget.defaultPageBuilder!(context, state, Builder(
+        builder: (BuildContext context) {
+          return match.route.buildWidget(context, state, shellRouteContext)!;
+        },
+      ));
     }
 
     // Return the result of the route's builder() or pageBuilder()

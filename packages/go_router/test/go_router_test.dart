@@ -5954,6 +5954,117 @@ void main() {
     });
   });
 
+  group('default page builder', () {
+    testWidgets(
+      'default page builder is used if pageBuilder is not provided',
+      (WidgetTester tester) async {
+        final List<RouteBase> routes = <RouteBase>[
+          GoRoute(
+            path: '/builder',
+            builder: (BuildContext context, GoRouterState state) =>
+                const SizedBox(key: Key('builder')),
+          ),
+          ShellRoute(
+            builder: (
+              BuildContext context,
+              GoRouterState state,
+              Widget child,
+            ) =>
+                SizedBox(key: const Key('ShellRoute.builder'), child: child),
+            routes: <RouteBase>[
+              GoRoute(
+                path: '/shell/builder',
+                builder: (BuildContext context, GoRouterState state) =>
+                    const SizedBox(key: Key('builder')),
+              ),
+            ],
+          ),
+        ];
+
+        final GoRouter router = await createRouter(
+          routes,
+          tester,
+          initialLocation: '/builder',
+          defaultPageBuilder: (
+            BuildContext context,
+            GoRouterState state,
+            Widget child,
+          ) =>
+              MaterialPage<dynamic>(
+            child: SizedBox(key: const Key('defaultPageBuilder'), child: child),
+          ),
+        );
+
+        expect(find.byKey(const Key('defaultPageBuilder')), findsOneWidget);
+        expect(find.byKey(const Key('builder')), findsOneWidget);
+
+        router.go('/shell/builder');
+        await tester.pumpAndSettle();
+        expect(find.byKey(const Key('defaultPageBuilder')), findsNWidgets(2));
+        expect(find.byKey(const Key('ShellRoute.builder')), findsOneWidget);
+        expect(find.byKey(const Key('builder')), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'pageBuilder provided to each route is used instead of defaultPageBuilder',
+      (WidgetTester tester) async {
+        final List<RouteBase> routes = <RouteBase>[
+          GoRoute(
+            path: '/page-builder',
+            pageBuilder: (BuildContext context, GoRouterState state) =>
+                const MaterialPage<dynamic>(
+              child: SizedBox(key: Key('pageBuilder')),
+            ),
+          ),
+          ShellRoute(
+            pageBuilder: (
+              BuildContext context,
+              GoRouterState state,
+              Widget child,
+            ) =>
+                MaterialPage<dynamic>(
+                    child: SizedBox(
+              key: const Key('ShellRoute.pageBuilder'),
+              child: child,
+            )),
+            routes: <RouteBase>[
+              GoRoute(
+                path: '/shell/page-builder',
+                pageBuilder: (BuildContext context, GoRouterState state) =>
+                    const MaterialPage<dynamic>(
+                  child: SizedBox(key: Key('pageBuilder')),
+                ),
+              ),
+            ],
+          ),
+        ];
+
+        final GoRouter router = await createRouter(
+          routes,
+          tester,
+          initialLocation: '/page-builder',
+          defaultPageBuilder: (
+            BuildContext context,
+            GoRouterState state,
+            Widget child,
+          ) =>
+              MaterialPage<dynamic>(
+            child: SizedBox(key: const Key('defaultPageBuilder'), child: child),
+          ),
+        );
+        expect(find.byKey(const Key('defaultPageBuilder')), findsNothing);
+        expect(find.byKey(const Key('pageBuilder')), findsOneWidget);
+
+        router.go('/shell/page-builder');
+        await tester.pumpAndSettle();
+        expect(find.byKey(const Key('defaultPageBuilder')), findsNothing);
+        expect(find.byKey(const Key('ShellRoute.pageBuilder')), findsOneWidget);
+        expect(find.byKey(const Key('pageBuilder')), findsOneWidget);
+      },
+    );
+  });
+
   testWidgets(
       'test the pathParameters in redirect when the Router is recreated',
       (WidgetTester tester) async {

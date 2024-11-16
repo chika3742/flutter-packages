@@ -21,6 +21,13 @@ typedef GoRouterPageBuilder = Page<dynamic> Function(
   GoRouterState state,
 );
 
+/// The default page builder for [GoRoute] and [ShellRoute].
+typedef DefaultPageBuilder = Page<dynamic> Function(
+  BuildContext context,
+  GoRouterState state,
+  Widget child,
+);
+
 /// The widget builder for [GoRoute].
 typedef GoRouterWidgetBuilder = Widget Function(
   BuildContext context,

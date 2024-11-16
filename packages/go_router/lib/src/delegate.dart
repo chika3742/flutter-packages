@@ -23,6 +23,7 @@ class GoRouterDelegate extends RouterDelegate<RouteMatchList>
   GoRouterDelegate({
     required RouteConfiguration configuration,
     required GoRouterBuilderWithNav builderWithNav,
+    required DefaultPageBuilder? defaultPageBuilder,
     required GoRouterPageBuilder? errorPageBuilder,
     required GoRouterWidgetBuilder? errorBuilder,
     required List<NavigatorObserver> observers,
@@ -33,6 +34,7 @@ class GoRouterDelegate extends RouterDelegate<RouteMatchList>
     builder = RouteBuilder(
       configuration: configuration,
       builderWithNav: builderWithNav,
+      defaultPageBuilder: defaultPageBuilder,
       errorPageBuilder: errorPageBuilder,
       errorBuilder: errorBuilder,
       restorationScopeId: restorationScopeId,

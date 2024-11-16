@@ -435,6 +435,7 @@ class _BuilderTestWidget extends StatelessWidget {
       ) {
         return child;
       },
+      defaultPageBuilder: null,
       errorPageBuilder: (
         BuildContext context,
         GoRouterState state,

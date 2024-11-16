@@ -90,6 +90,10 @@ class RoutingConfig {
 /// implemented), a re-evaluation will be triggered when the [InheritedWidget]
 /// changes.
 ///
+/// To specify a default page builder for entire routes, use
+/// `defaultPageBuilder`. If a route does not have a specific page builder, the
+/// `defaultPageBuilder` will be used to create the page.
+///
 /// To handle exceptions, use one of `onException`, `errorBuilder`, or
 /// `errorPageBuilder`. The `onException` is called when an exception is thrown.
 /// If `onException` is not provided, the exception is passed to
@@ -124,6 +128,7 @@ class GoRouter implements RouterConfig<RouteMatchList> {
     required List<RouteBase> routes,
     Codec<Object?, Object?>? extraCodec,
     GoExceptionHandler? onException,
+    DefaultPageBuilder? defaultPageBuilder,
     GoRouterPageBuilder? errorPageBuilder,
     GoRouterWidgetBuilder? errorBuilder,
     GoRouterRedirect? redirect,
@@ -148,6 +153,7 @@ class GoRouter implements RouterConfig<RouteMatchList> {
       ),
       extraCodec: extraCodec,
       onException: onException,
+      defaultPageBuilder: defaultPageBuilder,
       errorPageBuilder: errorPageBuilder,
       errorBuilder: errorBuilder,
       refreshListenable: refreshListenable,
@@ -170,6 +176,7 @@ class GoRouter implements RouterConfig<RouteMatchList> {
     required ValueListenable<RoutingConfig> routingConfig,
     Codec<Object?, Object?>? extraCodec,
     GoExceptionHandler? onException,
+    DefaultPageBuilder? defaultPageBuilder,
     GoRouterPageBuilder? errorPageBuilder,
     GoRouterWidgetBuilder? errorBuilder,
     Listenable? refreshListenable,
@@ -235,6 +242,7 @@ class GoRouter implements RouterConfig<RouteMatchList> {
 
     routerDelegate = GoRouterDelegate(
       configuration: configuration,
+      defaultPageBuilder: defaultPageBuilder,
       errorPageBuilder: errorPageBuilder,
       errorBuilder: errorBuilder,
       routerNeglect: routerNeglect,
